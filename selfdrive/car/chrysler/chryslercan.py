@@ -85,12 +85,3 @@ def create_wheel_buttons(packer, frame, cancel=False):
     "COUNTER": frame % 10
   }
   return packer.make_can_msg("WHEEL_BUTTONS", 0, values)
-
-def create_cruise_accel_decel_buttons(packer, frame, accel, decel):
-  # WHEEL_BUTTONS (571) Message sent to cancel ACC.
-  values = {
-    "ACC_SPEED_DEC": decel,
-    "ACC_SPEED_INC": accel,
-    "COUNTER": frame % 10
-  }
-  return packer.make_can_msg("WHEEL_BUTTONS", 0, values)

@@ -52,7 +52,6 @@ class CarState(CarStateBase):
     #ret.cruiseState.enabled = self.pcm_acc_active
     ret.cruiseState.available = ret.cruiseState.enabled  # FIXME: for now same as enabled
     ret.cruiseState.speed = cp.vl["DASHBOARD"]['ACC_SPEED_CONFIG_KPH'] * CV.KPH_TO_MS
-    ret.cruiseState.speedOffset = 0.0 #ret.cruiseState.speed - ret.vEgo;
 
     ret.steeringTorque = cp.vl["EPS_STATUS"]["TORQUE_DRIVER"]
     ret.steeringTorqueEps = cp.vl["EPS_STATUS"]["TORQUE_MOTOR"]

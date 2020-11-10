@@ -1,7 +1,6 @@
 from selfdrive.car import apply_toyota_steer_torque_limits
 from selfdrive.car.chrysler.chryslercan import create_lkas_hud, create_lkas_command, \
-                                               create_wheel_buttons, \
-                                               create_cruise_accel_decel_buttons
+                                               create_wheel_buttons
 from selfdrive.car.chrysler.values import CAR, SteerLimitParams
 from opendbc.can.packer import CANPacker
 
@@ -15,8 +14,6 @@ class CarController():
     self.alert_active = False
     self.gone_fast_yet = False
     self.steer_rate_limited = False
-    self.gasOrBrakeRequsted = False
-    self.cruiseSpeedWhenGasOrBrakeRequsted = 0.0;
 
     self.packer = CANPacker(dbc_name)
 
@@ -55,28 +52,6 @@ class CarController():
       # TODO: would be better to start from frame_2b3
       new_msg = create_wheel_buttons(self.packer, self.ccframe, cancel=True)
       can_sends.append(new_msg)
-    else:
-      if (actuators.gas != 0.0  or actuators.brake != 0.0) or self.gasOrBrakeRequsted:
-        if self.gasOrBrakeRequsted == False:
-          self.cruiseSpeedWhenGasOrBrakeRequsted = CS.out.cruiseState.speed
-          self.gasOrBrakeRequsted = True 
-        if actuators.brake > 0.0:
-          target_speed = ((((20.0 * 0.45) - CS.out.cruiseState.speed) * actuators.brake) + CS.out.cruiseState.speed)
-        elif actuators.gas > 0.0:
-          target_speed = ((((89 * 0.45) - CS.out.cruiseState.speed) * actuators.gas) + CS.out.cruiseState.speed)
-        else:
-          target_speed = self.cruiseSpeedWhenGasOrBrakeRequsted;
-
-        if target_speed > CS.out.cruiseState.speed:
-          can_sends.append(create_cruise_accel_decel_buttons(self.packer, self.ccframe, True, False))
-          can_sends.append(create_cruise_accel_decel_buttons(self.packer, self.ccframe, False, False))
-        elif target_speed < CS.out.cruiseState.speed:
-          can_sends.append(create_cruise_accel_decel_buttons(self.packer, self.ccframe, False, True))
-          can_sends.append(create_cruise_accel_decel_buttons(self.packer, self.ccframe, False, False))
-        else:
-          self.gasOrBrakeRequsted = False
-      else:
-        self.gasOrBrakeRequsted = False
 
     # LKAS_HEARTBIT is forwarded by Panda so no need to send it here.
     # frame is 100Hz (0.01s period)
