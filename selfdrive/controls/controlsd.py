@@ -326,7 +326,7 @@ class Controls:
 
     # ENABLED, PRE ENABLING, SOFT DISABLING
     if self.state != State.disabled:
-      # user and immediate disable always have priority in a non-disabled state
+      # user and immediate disable always have priority in a non-cdisabled state
       if self.events.any(ET.USER_DISABLE) or self.eventsArne182.any(ET.USER_DISABLE):
         self.state = State.disabled
         self.current_alert_types.append(ET.USER_DISABLE)
