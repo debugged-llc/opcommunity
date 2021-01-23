@@ -54,7 +54,7 @@ class PathPlanner():
       self.arne_pm = messaging_arne.PubMaster(['latControl'])
     self.last_cloudlog_t = 0
     self.steer_rate_cost = CP.steerRateCost
-    self.blindspotwait = 30
+    self.blindspotwait = 0
     self.setup_mpc()
     self.solution_invalid_cnt = 0
     self.lane_change_enabled = Params().get('LaneChangeEnabled') == b'1'
@@ -90,11 +90,11 @@ class PathPlanner():
       self.arne_sm.update(0)
       gas_button_status = self.arne_sm['arne182Status'].gasbuttonstatus
       if gas_button_status == 1:
-        self.blindspotwait = 10
+        self.blindspotwait = 0
       elif gas_button_status == 2:
-        self.blindspotwait = 30
+        self.blindspotwait = 0
       else:
-        self.blindspotwait = 20
+        self.blindspotwait = 0
       if self.arne_sm['arne182Status'].rightBlindspot:
         self.blindspotTrueCounterright = 0
       else:
@@ -104,7 +104,7 @@ class PathPlanner():
       else:
         self.blindspotTrueCounterleft = self.blindspotTrueCounterleft + 1
     else:
-      self.blindspotwait = 10
+      self.blindspotwait = 0
       self.blindspotTrueCounterleft = 0
       self.blindspotTrueCounterright = 0
     v_ego = sm['carState'].vEgo
@@ -138,15 +138,11 @@ class PathPlanner():
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
     else:
-      # torque_applied = (sm['carState'].steeringPressed and \
-      #                  ((sm['carState'].steeringTorque > 0 and self.lane_change_direction == LaneChangeDirection.left and not sm['carState'].leftBlindspot) or \
-      #                   (sm['carState'].steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.right and not sm['carState'].rightBlindspot))) or \
-      #                  (not self.alca_nudge_required and self.blindspotTrueCounterleft > self.blindspotwait and self.lane_change_direction == LaneChangeDirection.left) or \
-      #                  (not self.alca_nudge_required and self.blindspotTrueCounterright > self.blindspotwait and self.lane_change_direction == LaneChangeDirection.right)
       torque_applied = (sm['carState'].steeringPressed and \
                        ((sm['carState'].steeringTorque > 0 and self.lane_change_direction == LaneChangeDirection.left and not sm['carState'].leftBlindspot) or \
-                       (sm['carState'].steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.right and not sm['carState'].rightBlindspot))) or \
-                       not alca_nudge_required
+                        (sm['carState'].steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.right and not sm['carState'].rightBlindspot))) or \
+                       (not self.alca_nudge_required and self.blindspotTrueCounterleft > self.blindspotwait and self.lane_change_direction == LaneChangeDirection.left) or \
+                       (not self.alca_nudge_required and self.blindspotTrueCounterright > self.blindspotwait and self.lane_change_direction == LaneChangeDirection.right)
 
       #blindspot_detected = ((sm['carState'].leftBlindspot and self.lane_change_direction == LaneChangeDirection.left) or
       #                      (sm['carState'].rightBlindspot and self.lane_change_direction == LaneChangeDirection.right))

@@ -79,7 +79,7 @@ class ALCAController():
     self.laneChange_over_the_line = 0 # did we cross the line?
     self.laneChange_enabled = 1 # set to zero for no lane change
     self.laneChange_counter = 0 # used to count frames during lane change
-    self.laneChange_wait = 2 # how many seconds to wait before it starts the change
+    self.laneChange_wait = 0 # how many seconds to wait before it starts the change
     self.laneChange_direction = 0 # direction of the lane change 
     self.laneChange_cancelled = False
     self.laneChange_cancelled_counter = 0
@@ -224,7 +224,7 @@ class ALCAController():
           #CS.UE.custom_alert_message(2,"Auto Lane Change Engaged! (1)",self.laneChange_wait * 100)
         self.laneChange_counter += 1
         self.debug_alca("ALCA phase 2: " + str(self.laneChange_counter))
-        if self.laneChange_counter == self.laneChange_wait * 100:
+        if self.laneChange_counter >= self.laneChange_wait * 100:
           self.laneChange_enabled = 3
           self.laneChange_counter = 0
       if self.laneChange_enabled ==3:
