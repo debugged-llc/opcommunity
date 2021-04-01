@@ -65,7 +65,7 @@ class RadarInterface(RadarInterfaceBase):
     # To prevent radar communication issue on Chrysler 300.  Shouldn't affect other vehicles.
     # errors = []
     # if not self.rcp.can_valid:
-    #   errors.append("canError")
+    #   errors.append("canError")a
     # ret.errors = errors
 
     for ii in self.updated_messages:  # ii should be the message ID as a number
