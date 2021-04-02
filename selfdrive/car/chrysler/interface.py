@@ -46,30 +46,42 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 3.05308 # in meters
       ret.steerRatio = 15.5 # 2013 V-6 (RWD) — 15.5:1 V-6 (AWD) — 16.5:1 V-8 (RWD) — 15.5:1 V-8 (AWD) — 16.5:1
       ret.mass = 1828.0 + STD_CARGO_KG # 2013 V-6 RWD
-      # ret.steerRateCost = 0.35
-      # ret.lateralTuning.pid.kf = 0.00006   # full torque for 10 deg at 80mph means 0.00007818594
-      ret.steerActuatorDelay =  0.38
-      ret.steerRateCost =  0.1
-      ret.steerLimitTimer = 0.8
-      ret.lateralTuning.init('indi')
-      
-      ret.lateralTuning.indi.innerLoopGain = 2.65 # 2.48
-      ret.lateralTuning.indi.outerLoopGainBP = [0, 45 * 0.45, 65 * 0.45, 85 * 0.45]
-      ret.lateralTuning.indi.outerLoopGainV = [0.55, 0.73, 1.58, 1.95]
-      ret.lateralTuning.indi.timeConstant = 10.0
-      ret.lateralTuning.indi.actuatorEffectiveness =  1.55
-#ret.lateralTuning.indi.innerLoopGain =  
-      #ret.lateralTuning.indi.outerLoopGainV =  [0.13, 0.53     , 0.77, 0.82 , 1.18, 1.22]
-      #ret.lateralTuning.indi.outerLoopGainBP = [0   , 35 * 0.45, 45 * 0.45, 55 * 0.45, 65 * 0.45, 75 * 0.45]
-      #ret.lateralTuning.indi.timeConstant =  1.0
-      #ret.lateralTuning.indi.actuatorEffectiveness =  1.5
       
 
-# ret.lateralTuning.indi.innerLoopGain = 3.06
-      # ret.lateralTuning.indi.outerLoopGain = 2.0kpwer
-      # ret.lateralTuning.indi.timeConstant = 1.0
-      # ret.lateralTuning.indi.actuatorEffectiveness = 1.5
-      tire_stiffness_factor = 1.0 # 0.85
+        ret.lateralTuning.init('indi')
+        ret.lateralTuning.indi.innerLoopGain = 3.0
+        ret.lateralTuning.indi.outerLoopGainBP = [0.]	
+        ret.lateralTuning.indi.outerLoopGainV = [2.]
+        ret.lateralTuning.indi.timeConstant = 1.0
+        ret.lateralTuning.indi.actuatorEffectiveness = 1.5
+        ret.steerActuatorDelay = 0.4
+        ret.steerLimitTimer = 0.4
+        tire_stiffness_factor = 1.125
+        ret.steerRateCost = 1.0
+#       # ret.steerRateCost = 0.35
+#       # ret.lateralTuning.pid.kf = 0.00006   # full torque for 10 deg at 80mph means 0.00007818594
+#       ret.steerActuatorDelay =  0.38
+#       ret.steerRateCost =  0.1
+#       ret.steerLimitTimer = 0.8
+#       ret.lateralTuning.init('indi')
+      
+#       ret.lateralTuning.indi.innerLoopGain = 2.65 # 2.48
+#       ret.lateralTuning.indi.outerLoopGainBP = [0, 45 * 0.45, 65 * 0.45, 85 * 0.45]
+#       ret.lateralTuning.indi.outerLoopGainV = [0.55, 0.73, 1.58, 1.95]
+#       ret.lateralTuning.indi.timeConstant = 10.0
+#       ret.lateralTuning.indi.actuatorEffectiveness =  1.55
+# #ret.lateralTuning.indi.innerLoopGain =  
+#       #ret.lateralTuning.indi.outerLoopGainV =  [0.13, 0.53     , 0.77, 0.82 , 1.18, 1.22]
+#       #ret.lateralTuning.indi.outerLoopGainBP = [0   , 35 * 0.45, 45 * 0.45, 55 * 0.45, 65 * 0.45, 75 * 0.45]
+#       #ret.lateralTuning.indi.timeConstant =  1.0
+#       #ret.lateralTuning.indi.actuatorEffectiveness =  1.5
+      
+
+# # ret.lateralTuning.indi.innerLoopGain = 3.06
+#       # ret.lateralTuning.indi.outerLoopGain = 2.0kpwer
+#       # ret.lateralTuning.indi.timeConstant = 1.0
+#       # ret.lateralTuning.indi.actuatorEffectiveness = 1.5
+#       tire_stiffness_factor = 1.0 # 0.85
 
     ret.minSteerSpeed = 3.8  # m/s
     if candidate in (CAR.PACIFICA_2019_HYBRID, CAR.PACIFICA_2020, CAR.JEEP_CHEROKEE_2019):
