@@ -48,16 +48,16 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 1828.0 + STD_CARGO_KG # 2013 V-6 RWD
       
 
-        ret.lateralTuning.init('indi')
-        ret.lateralTuning.indi.innerLoopGain = 3.0
-        ret.lateralTuning.indi.outerLoopGainBP = [0.]	
-        ret.lateralTuning.indi.outerLoopGainV = [2.]
-        ret.lateralTuning.indi.timeConstant = 1.0
-        ret.lateralTuning.indi.actuatorEffectiveness = 1.5
-        ret.steerActuatorDelay = 0.4
-        ret.steerLimitTimer = 0.4
-        tire_stiffness_factor = 1.125
-        ret.steerRateCost = 1.0
+      ret.lateralTuning.init('indi')
+      ret.lateralTuning.indi.innerLoopGain = 3.0
+      ret.lateralTuning.indi.outerLoopGainBP = [0.]	
+      ret.lateralTuning.indi.outerLoopGainV = [2.]
+      ret.lateralTuning.indi.timeConstant = 1.0
+      ret.lateralTuning.indi.actuatorEffectiveness = 1.5
+      ret.steerActuatorDelay = 0.4
+      ret.steerLimitTimer = 0.4
+      tire_stiffness_factor = 1.125
+      ret.steerRateCost = 1.0
 #       # ret.steerRateCost = 0.35
 #       # ret.lateralTuning.pid.kf = 0.00006   # full torque for 10 deg at 80mph means 0.00007818594
 #       ret.steerActuatorDelay =  0.38
