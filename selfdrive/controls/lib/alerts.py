@@ -89,8 +89,8 @@ ALERTS = [
 
   Alert(
       "steerSaturated",
-      "TAKE CONTROL",
-      "Turn Exceeds Steering Limit",
+      "TAKE THE WHEEL",
+      "This turn is too sharp.",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, 1., 2., 3.),
 
@@ -131,14 +131,14 @@ ALERTS = [
 
   Alert(
       "steerTempUnavailable",
-      "TAKE CONTROL",
+      "TAKE THE HWEEL",
       "Steering Temporarily Unavailable",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 3.),
 
   Alert(
       "steerTempUnavailableMute",
-      "TAKE CONTROL",
+      "TAKE THE WHEEL",
       "Steering Temporarily Unavailable",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .2, .2, .2),
@@ -201,8 +201,8 @@ ALERTS = [
 
   Alert(
       "startup",
-      "Be ready to take over at any time",
-      "Do not forget to PRAY!",
+      "Starting Autopilot...",
+      "",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 8.),
 
@@ -269,8 +269,8 @@ ALERTS = [
 
   Alert(
       "belowSteerSpeed",
-      "TAKE CONTROL",
-      "Steer Unavailable Below ",
+      "TAKE THE WHEEL",
+      "Steering is unavailbe below ",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.MID, VisualAlert.steerRequired, AudibleAlert.none, 0., 0.4, .3),
 
@@ -296,8 +296,8 @@ ALERTS = [
 
   Alert(
       "laneChange",
-      "Changing Lane",
-      "Monitor Other Vehicles",
+      "Switching Lanes",
+      "Check Your Surroundings",
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .0, .1, .1),
 
