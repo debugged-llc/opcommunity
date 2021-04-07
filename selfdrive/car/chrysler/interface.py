@@ -115,6 +115,25 @@ class CarInterface(CarInterfaceBase):
 
     # speeds
     ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
+    
+    # accel/decel button presses
+    buttonEvents = []
+    if self.CS.accelCruiseButton or self.CS.accelCruiseButtonChanged:
+      be = car.CarState.ButtonEvent.new_message()
+      be.type = ButtonType.accelCruise
+      be.pressed = self.CS.accelCruiseButton
+      buttonEvents.append(be)
+    if self.CS.decelCruiseButton or self.CS.decelCruiseButtonChanged:
+      be = car.CarState.ButtonEvent.new_message()
+      be.type = ButtonType.decelCruise
+      be.pressed = self.CS.decelCruiseButton
+      buttonEvents.append(be)
+    if self.CS.resumeCruiseButton or self.CS.resumeCruiseButtonChanged:
+      be = car.CarState.ButtonEvent.new_message()
+      be.type = ButtonType.resumeCruise
+      be.pressed = self.CS.resumeCruiseButton
+      buttonEvents.append(be)
+    ret.buttonEvents = buttonEvents
 
     ret.buttonEvents = []
 
