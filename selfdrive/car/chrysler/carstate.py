@@ -120,12 +120,21 @@ class CarState(CarStateBase):
       ("ACC_STATUS_2", "ACC_2", 0),
       ("HIGH_BEAM_FLASH", "STEERING_LEVERS", 0),
       ("ACC_SPEED_CONFIG_KPH", "DASHBOARD", 0),
+      ("CRUISE_STATE", "DASHBOARD", 0),
       ("TORQUE_DRIVER", "EPS_STATUS", 0),
       ("TORQUE_MOTOR", "EPS_STATUS", 0),
       ("LKAS_STATE", "EPS_STATUS", 1),
       ("COUNTER", "EPS_STATUS", -1),
       ("TRACTION_OFF", "TRACTION_BUTTON", 0),
       ("SEATBELT_DRIVER", "SEATBELT_STATUS", 0),
+      ("COUNTER", "WHEEL_BUTTONS", -1),
+      ("ACC_RESUME", "WHEEL_BUTTONS", 0),
+      ("ACC_CANCEL", "WHEEL_BUTTONS", 0),
+      ("ACC_SPEED_INC", "WHEEL_BUTTONS", 0),
+      ("ACC_SPEED_DEC", "WHEEL_BUTTONS", 0),
+      ("ACC_FOLLOW_INC", "WHEEL_BUTTONS", 0),
+      ("ACC_FOLLOW_DEC", "WHEEL_BUTTONS", 0),
+      ("ACC_DISTANCE_CONFIG_2", "DASHBOARD", 0),
     ]
 
     checks = [
