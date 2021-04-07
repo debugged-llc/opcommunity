@@ -188,6 +188,14 @@ class CarState(CarStateBase):
       ("WHEEL_SPEEDS", 50),
       ("STEERING", 100),
       ("ACC_2", 50),
+      ("GEAR", 50),
+      ("WHEEL_BUTTONS", 50),
+      ("ACCEL_GAS_134", 50),
+      ("DASHBOARD", 15),
+      ("STEERING_LEVERS", 10),
+      ("SEATBELT_STATUS", 2),
+      ("DOORS", 1),
+      ("TRACTION_BUTTON", 1),
     ]
 
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0)
