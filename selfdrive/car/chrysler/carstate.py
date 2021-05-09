@@ -15,6 +15,7 @@ class CarState(CarStateBase):
     can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
     self.shifter_values = can_define.dv["GEAR"]['PRNDL']
     self.acc_on_button = False
+    self.veh_on_timer = 0
 
   def update(self, cp, cp_cam):
 
@@ -67,14 +68,28 @@ class CarState(CarStateBase):
     self.apasteerOn = cp.vl["EPS_STATUS"]["APA_ACTIVE"] == 1
 
     ret.genericToggle = bool(cp.vl["STEERING_LEVERS"]['HIGH_BEAM_FLASH'])
-
-    ret.leftBlindspot = 7 > cp.vl["BLIND_SPOT_WARNINGS"]['BLIND_SPOT_LEFT'] > 0
-    ret.rightBlindspot = 7 > cp.vl["BLIND_SPOT_WARNINGS"]['BLIND_SPOT_RIGHT'] > 0
+    
+    if self.CP.enableBsm:
+      ret.leftBlindspot = cp.vl["BLIND_SPOT_WARNINGS"]['BLIND_SPOT_LEFT'] == 1
+      ret.rightBlindspot = cp.vl["BLIND_SPOT_WARNINGS"]['BLIND_SPOT_RIGHT'] == 1
 
     self.lkas_counter = cp_cam.vl["LKAS_COMMAND"]['COUNTER']
     self.lkas_status_ok = cp_cam.vl["LKAS_HEARTBIT"]['LKAS_BUTTON_LED']
     self.apa_steer_status = cp.vl["AUTO_PARK_REQUEST"]['APA_STEER_ACT'] == 1
-    self.veh_on = cp.vl["HYBRID_ECU"]['VEH_ON'] == 1
+    if self.CP.enablehybridEcu:
+       if cp.vl["HYBRID_ECU"]['VEH_ON'] == 1:
+         self.veh_on_timer += 1
+       else:
+         self.veh_on_timer = 0
+       self.veh_on = self.veh_on_timer >= 50
+       self.axle_torq_max = cp.vl["AXLE_TORQ"]['AXLE_TORQ_MAX']
+       self.axle_torq_min = cp.vl["AXLE_TORQ"]['AXLE_TORQ_MIN']
+    else:
+      self.veh_on_timer += 1
+      self.veh_on = self.veh_on_timer >= 200
+      self.axle_torq_min = 20.
+      self.axle_torq_max = 300.
+
     self.acc_hold = bool(cp.vl["ACC_2"]['ACC_STOP'])
     self.lead_dist = cp.vl["DASHBOARD"]['LEAD_DIST']
     self.wheel_button_counter = cp.vl["WHEEL_BUTTONS"]['COUNTER']
@@ -89,11 +104,9 @@ class CarState(CarStateBase):
     self.acc_button_pressed = self.acc_cancel_button or self.acc_resume_button or self.acc_setplus_button or \
                               self.acc_setminus_button or self.acc_followdec_button or self.acc_followinc_button
 
-    self.axle_torq = cp.vl["AXLE_TORQ"]['AXLE_TORQ']
     self.acc_override = bool(cp.vl["ACCEL_RELATED_120"]['ACC_OVERRIDE'])
     self.accbrakeFaulted = ((cp.vl["BRAKE_2"]['ACC_BRAKE_FAIL']) > 0) or ((cp.vl["ACC_ERROR"]['ACC_ERROR']) > 0)
     self.accengFaulted = (cp.vl["ACCEL_RELATED_120"]['ACC_ENG_OK']) == 0
-
 
     return ret
 
@@ -130,7 +143,6 @@ class CarState(CarStateBase):
       ("SEATBELT_DRIVER_UNLATCHED", "SEATBELT_STATUS", 0),
       ("APA_ACTIVE", "EPS_STATUS", 0),
       ("APA_STEER_FAULT", "EPS_STATUS", 0),
-      ("VEH_ON", "HYBRID_ECU", 0),
       ("ACC_STOP", "ACC_2", 0),
       ("BLIND_SPOT_RIGHT", "BLIND_SPOT_WARNINGS", 0),
       ("BLIND_SPOT_LEFT", "BLIND_SPOT_WARNINGS", 0),
@@ -148,7 +160,6 @@ class CarState(CarStateBase):
       ("VEHICLE_SPEED_KPH", "BRAKE_1", 0),
       ("BRAKE_LIGHT", "BRAKE_2", 0),
       ("APA_STEER_ACT", "AUTO_PARK_REQUEST", 0),
-      ("AXLE_TORQ", "AXLE_TORQ", 0),
       ("ACC_OVERRIDE", "ACCEL_RELATED_120", 0),
       ("ACC_BRAKE_FAIL", "BRAKE_2", 0),
       ("ACC_ENG_OK", "ACCEL_RELATED_120", 0),
@@ -172,14 +183,31 @@ class CarState(CarStateBase):
       ("TRACTION_BUTTON", 1),
       ("BLIND_SPOT_WARNINGS", 2),
       ("BRAKE_1", 50),
-      ("HYBRID_ECU", 1),
       ("AUTO_PARK_REQUEST", 50),
       ("WHEEL_BUTTONS", 1),
       ("ACCEL_GAS_22F", 50),
-      ("AXLE_TORQ", 100),
       ("ACCEL_RELATED_120", 50),
       ("ACC_ERROR", 0),
     ]
+
+    if CP.enablehybridEcu:
+      signals += [
+        ("VEH_ON", "HYBRID_ECU", 0),
+        ("AXLE_TORQ", "AXLE_TORQ", 0),
+        ("AXLE_TORQ_MIN", "AXLE_TORQ", 0),
+        ("AXLE_TORQ_MAX", "AXLE_TORQ", 0),
+      ]
+      checks += [
+        ("HYBRID_ECU", 1),
+        ("AXLE_TORQ", 100),
+      ]
+
+    if CP.enableBsm:
+      signals += [
+        ("BLIND_SPOT_RIGHT", "BLIND_SPOT_WARNINGS", 0),
+        ("BLIND_SPOT_LEFT", "BLIND_SPOT_WARNINGS", 0),
+      ]
+      checks += [("BLIND_SPOT_WARNINGS", 2)]
 
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0)
 

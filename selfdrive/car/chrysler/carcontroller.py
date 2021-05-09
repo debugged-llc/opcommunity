@@ -23,12 +23,12 @@ class CarController():
     self.timer = 0
     self.steerErrorMod = False
     self.steer_type = int(0)
-    self.on_timer = 0
     self.hightorqUnavailable = False
     self.acc_stop_timer = 0
     self.stop_button_spam = 0
     self.wheel_button_counter_prev = 0
     self.lead_dist_at_stop = 0
+    self.hybridEcu = CP.enablehybridEcu
     self.mango_lat_active = Params().get_bool('ChryslerMangoLat')
     self.full_range_steer = Params().get_bool('LkasFullRangeAvailable')
     self.mango_mode_active = self.mango_lat_active or self.full_range_steer
@@ -60,8 +60,6 @@ class CarController():
   def update(self, enabled, CS, actuators, pcm_cancel_cmd, hud_alert, op_lead_rvel, op_lead_visible, op_lead_dist, long_starting):
 
     # *** compute control surfaces ***
-    if self.on_timer < 50 and CS.veh_on:
-      self.on_timer += 1
 
     wp_type = int(0)
     self.hightorqUnavailable = False
@@ -109,7 +107,7 @@ class CarController():
       if self.steerErrorMod:
         self.steer_type = int(0)
     elif CS.apaFault or CS.out.gearShifter not in (GearShifter.drive, GearShifter.low) or \
-            self.on_timer < 50 or CS.apa_steer_status:
+            not CS.veh_on or CS.apa_steer_status:
       self.steer_type = int(0)
     
     if self.steer_type == int(0) and CS.out.gearShifter in (GearShifter.drive, GearShifter.low) and not CS.apaFault:
@@ -145,6 +143,8 @@ class CarController():
         button_type = 'ACC_CANCEL'
         self.op_cancel_cmd = True
       elif enabled and self.resume_press and (CS.lead_dist > self.lead_dist_at_stop or op_lead_rvel > 0 or 15 > CS.lead_dist >= 6.):
+        button_type = 'ACC_RESUME'
+      elif long_starting:
         button_type = 'ACC_RESUME'
 
       if button_type is not None:
@@ -225,10 +225,16 @@ class CarController():
     self.go_req = long_starting
 
     if not CS.out.brakePressed and (apply_accel >= START_GAS_THRESHOLD or self.accel_active and apply_accel >= STOP_GAS_THRESHOLD):
-      self.accel_active = True
-      self.trq_val = max(apply_accel * CV.ACCEL_TO_NM, CS.axle_torq - 50)
-      self.stop_req = False
-      self.go_req = CS.out.standstill
+      self.trq_val = apply_accel * CV.ACCEL_TO_NM
+      if CS.axle_torq_max > self.trq_val > CS.axle_torq_min:
+        self.accel_active = True
+        self.stop_req = False
+        self.go_req = CS.out.standstill
+      else:
+        self.trq_val = CS.axle_torq_min
+        self.accel_active = False
+      if not self.hybridEcu:
+        self.trq_val /= 15.5  # GEAR_RATO guess for non hybrid?
     else:
       self.accel_active = False
 
@@ -242,7 +248,7 @@ class CarController():
       new_msg = create_op_acc_1(self.packer, self.accel_active, self.trq_val, self.acc_counter)
       can_sends.append(new_msg)
       new_msg = create_op_acc_2(self.packer, self.acc_available, self.acc_enabled, self.stop_req, self.go_req,
-                                self.acc_pre_brake, self.decel_val, self.decel_active)
+                                self.acc_pre_brake, self.decel_val, self.decel_active, self.acc_counter)
       can_sends.append(new_msg)
     if self.ccframe % 6 == 0:
       new_msg = create_op_dashboard(self.packer, self.set_speed, self.cruise_state, self.cruise_icon, op_lead_visible,
@@ -255,7 +261,4 @@ class CarController():
     self.ccframe += 1
 
     return can_sends
-
-
-
 
