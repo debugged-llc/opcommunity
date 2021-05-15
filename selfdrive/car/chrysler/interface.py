@@ -33,7 +33,7 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.deadzoneBP = [0., .5]
     ret.longitudinalTuning.deadzoneV = [0.00, 0.00]
     ret.gasMaxBP = [0., 1., 1.1, 15., 40.]
-    ret.gasMaxV = [1., 1., 1., 1., 1.]
+    ret.gasMaxV = [2., 2., 2., 2., 2.]
     ret.brakeMaxBP = [0., 5., 5.1]
     ret.brakeMaxV = [3.8, 3.8, 3.8]  # safety limits to stop unintended deceleration
     ret.longitudinalTuning.kfBP = [0., 5., 10., 20., 30.]
@@ -87,7 +87,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.enableCamera = True
     ret.enableBsm = 720 in fingerprint[0]
-    ret.enablehybridEcu = True # 655 in fingerprint[0]
+    ret.enablehybridEcu = 655 in fingerprint[0] or 291 in fingerprint[0]
 
     return ret
 
@@ -127,9 +127,6 @@ class CarInterface(CarInterfaceBase):
   # pass in a car.CarControl
   # to be called @ 100hz
   def apply(self, c):
-
-    if (self.CS.frame == -1):
-      return []  # if we haven't seen a frame 220, then do not update.
 
     can_sends = self.CC.update(c.enabled, self.CS, c.actuators, c.cruiseControl.cancel,
                                c.hudControl.visualAlert,

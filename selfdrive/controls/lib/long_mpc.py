@@ -12,7 +12,7 @@ from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
 LOG_MPC = os.environ.get('LOG_MPC', False)
 
 BpvlTr = [0. , 5., 20. , 30., 35.]
-TrvlY = [ 0.85, 1.8,  1.4, 1.05, 1.]
+TrvlY = [ 0.85, 1.8,  1.8, 1.05, 1.]
 
 class LongitudinalMpc():
   def __init__(self, mpc_id):
@@ -67,6 +67,7 @@ class LongitudinalMpc():
 
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
+    TR = interp(v_ego, BpvlTr, TrvlY)
 
     if lead is not None and lead.status:
       x_lead = lead.dRel
@@ -97,7 +98,6 @@ class LongitudinalMpc():
 
     # Calculate mpc
     t = sec_since_boot()
-    TR = interp(v_ego, BpvlTr, TrvlY)
     self.n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, TR)
     self.duration = int((sec_since_boot() - t) * 1e9)
 

@@ -1,5 +1,6 @@
 from selfdrive.config import Conversions as CV
 from common.numpy_fast import clip
+from numpy import interp
 
 SET_SPEED_MIN = 5 * CV.MPH_TO_MS
 SET_SPEED_MAX = 120 * CV.MPH_TO_MS
@@ -13,10 +14,10 @@ ACCEL_MIN = -3.8  # m/s2
 ACCEL_SCALE = 1.
 
 DEFAULT_DECEL = 4.0 # m/s2
-START_BRAKE_THRESHOLD = -0.005 # m/s2
+START_BRAKE_THRESHOLD = -0.25 # m/s2
 STOP_BRAKE_THRESHOLD = 0.001 # m/s2
 START_GAS_THRESHOLD = 0.002 # m/s2
-STOP_GAS_THRESHOLD = -0.159 # m/s2
+STOP_GAS_THRESHOLD = 0.0 # m/s2
 
 CHIME_TIME = 8
 CHIME_GAP_TIME = 5
@@ -110,14 +111,20 @@ def accel_hysteresis(accel, accel_steady):
 def accel_rate_limit(accel_lim, prev_accel_lim):
  # acceleration jerk = 2.0 m/s/s/s
  # brake jerk = 3.8 m/s/s/s
+
+  drBp = [0., -0.15, -0.50, -1.0, -1.5, -5.0]
+  dra = [ -0.005, -0.007,  -0.01, -0.015, -0.02, -0.04]
+
+  decel_rate = interp(accel_lim, drBp, dra)
+
   if accel_lim > 0:
     if accel_lim > prev_accel_lim:
-      accel_lim = min(accel_lim, prev_accel_lim + 0.02)
+      accel_lim = min(accel_lim, prev_accel_lim + 0.01)
     else:
       accel_lim = max(accel_lim, prev_accel_lim - 0.038)
   else:
     if accel_lim < prev_accel_lim:
-      accel_lim = max(accel_lim, prev_accel_lim - 0.038)
+      accel_lim = max(accel_lim, prev_accel_lim - decel_rate)
     else:
       accel_lim = min(accel_lim, prev_accel_lim + 0.01)
 

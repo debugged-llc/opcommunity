@@ -98,9 +98,7 @@ class CarController():
 
     self.steer_rate_limited = new_steer != apply_steer
     self.apply_steer_last = apply_steer
-
-    if CS.out.vEgo < 2.2:
-      self.steer_type = wp_type
+    self.steer_type = wp_type
 
     if wp_type != 2:
       self.steerErrorMod = CS.steerError
@@ -213,9 +211,9 @@ class CarController():
     apply_accel = accel_rate_limit(self.accel_lim, self.accel_lim_prev)
 
     self.decel_val = DEFAULT_DECEL
-    self.trq_val = STOP_GAS_THRESHOLD * CV.ACCEL_TO_NM
+    self.trq_val = CS.axle_torq_min
 
-    if not CS.out.gasPressed and not CS.acc_override and\
+    if not CS.out.accgasOverride and\
             (apply_accel <= START_BRAKE_THRESHOLD or self.decel_active and apply_accel <= STOP_BRAKE_THRESHOLD):
       self.decel_active = True
       self.decel_val = apply_accel
@@ -225,7 +223,12 @@ class CarController():
     self.go_req = long_starting
 
     if not CS.out.brakePressed and (apply_accel >= START_GAS_THRESHOLD or self.accel_active and apply_accel >= STOP_GAS_THRESHOLD):
-      self.trq_val = apply_accel * CV.ACCEL_TO_NM
+
+      if CS.hybrid_power_meter > 25 and self.trq_val > CS.axle_torq:
+        self.trq_val = CS.axle_torq - 100
+      else:
+        self.trq_val = apply_accel * CV.ACCEL_TO_NM
+
       if CS.axle_torq_max > self.trq_val > CS.axle_torq_min:
         self.accel_active = True
         self.stop_req = False
